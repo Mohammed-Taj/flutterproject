@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/provider/auth_provider.dart';
+import 'package:shop/shared/shared_prefs_helper.dart';
 
 class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -62,6 +63,7 @@ class LoginScreen extends StatelessWidget {
                           await authProvider.login(email, password);
 
                           if (authProvider.errorMessage == null) {
+                            await SharedPrefsHelper.setLoggedIn(true);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Login successful')),
                             );

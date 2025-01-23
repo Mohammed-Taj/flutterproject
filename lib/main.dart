@@ -6,18 +6,23 @@ import 'package:shop/provider/HomeProvider.dart';
 import 'package:shop/provider/auth_provider.dart';
 import 'package:shop/provider/add_to_cart_provider.dart';
 import 'package:shop/provider/favorite_provider.dart';
+import 'package:shop/provider/theme_provider.dart';
 import 'package:shop/screens/Login_screen.dart';
 import 'package:shop/screens/Register_screen.dart';
 import 'package:shop/screens/nav_bar_screen.dart';
+import 'package:shop/shared/shared_prefs_helper.dart';
 
-void main() {
-  runApp(
-    const MyApp(),
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  bool isLoggedIn = await SharedPrefsHelper.isLoggedIn();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -27,54 +32,43 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: kprimaryColor,
-          scaffoldBackgroundColor: kcontentColor,
-          appBarTheme: AppBarTheme(
-            backgroundColor: kprimaryColor,
-            iconTheme: IconThemeData(color: Colors.white),
-            titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: kprimaryColor),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              brightness: Brightness.light,
+              primaryColor: kprimaryColor,
+              scaffoldBackgroundColor: kcontentColor,
+              appBarTheme: AppBarTheme(
+                backgroundColor: kprimaryColor,
+                iconTheme: const IconThemeData(color: Colors.white),
+                titleTextStyle:
+                    const TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              textTheme: GoogleFonts.mulishTextTheme(),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: kprimaryColor),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: Colors.black,
+              scaffoldBackgroundColor: Colors.grey[900],
+              appBarTheme: AppBarTheme(
+                backgroundColor: Colors.black,
+                iconTheme: const IconThemeData(color: Colors.white),
+                titleTextStyle:
+                    const TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              textTheme: GoogleFonts.mulishTextTheme(),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: kprimaryColor, width: 2),
-            ),
-            labelStyle: TextStyle(color: kprimaryColor),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kprimaryColor,
-              foregroundColor: kcontentColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              foregroundColor: kprimaryColor,
-            ),
-          ),
-          textTheme: GoogleFonts.mulishTextTheme(),
-        ),
-        initialRoute: '/register',
-        routes: {
-          '/login': (context) => LoginScreen(),
-          '/nav-bar': (context) => BottomNavBar(),
-          '/register': (context) => RegisterScreen(),
+            initialRoute: isLoggedIn ? '/nav-bar' : '/login',
+            routes: {
+              '/login': (context) => LoginScreen(),
+              '/nav-bar': (context) => BottomNavBar(),
+              '/register': (context) => RegisterScreen(),
+            },
+          );
         },
       ),
     );
