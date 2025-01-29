@@ -23,8 +23,8 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        // Remove Expanded here
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -38,6 +38,7 @@ class HomeScreen extends StatelessWidget {
               const MySearchBAR(),
               const SizedBox(height: 20),
               Consumer<HomeProvider>(
+                // Make sure HomeProvider is properly initialized
                 builder: (context, homeProvider, child) {
                   return ImageSlider(
                     currentSlide: homeProvider.currentSlider,
@@ -84,6 +85,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 10),
               // Shopping Items (GridView)
               Consumer<HomeProvider>(
+                // Ensure HomeProvider state is properly managed
                 builder: (context, homeProvider, child) {
                   return GridView.builder(
                     padding: EdgeInsets.zero,
@@ -163,7 +165,9 @@ class CategoryItemCard extends StatelessWidget {
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: isSelected ? Colors.blue[200] : Colors.transparent,
+        color: isSelected
+            ? Colors.deepOrangeAccent
+            : Colors.transparent, // Add color dynamically
       ),
       child: Column(
         children: [

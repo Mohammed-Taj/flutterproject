@@ -24,12 +24,20 @@ class _AddToCartState extends State<AddToCart> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
           color: Colors.black,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
         padding: const EdgeInsets.symmetric(horizontal: 15),
         alignment: Alignment.center,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Quantity Selector
             Container(
               height: 40,
               decoration: BoxDecoration(
@@ -40,7 +48,7 @@ class _AddToCartState extends State<AddToCart> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      if (currentIndex != 1) {
+                      if (currentIndex > 1) {
                         setState(() {
                           currentIndex--;
                         });
@@ -58,6 +66,7 @@ class _AddToCartState extends State<AddToCart> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
+                      fontSize: 16,
                     ),
                   ),
                   const SizedBox(width: 5),
@@ -72,44 +81,59 @@ class _AddToCartState extends State<AddToCart> {
                       Icons.add,
                       color: Colors.white,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
+            // Add to Cart Button
             GestureDetector(
               onTap: () {
                 provider.toogleFavorite(widget.product);
-                // if items is add then show this snackbar
-                const snackBar = SnackBar(
-                  content: Text(
-                    "Successfully added!",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                      color: Colors.white,
+                // Show Snackbar
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text(
+                      "Successfully added!",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    duration: const Duration(seconds: 1),
+                    backgroundColor: kprimaryColor,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  duration: Duration(seconds: 1),
                 );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
               child: Container(
                 height: 55,
                 decoration: BoxDecoration(
                   color: kprimaryColor,
                   borderRadius: BorderRadius.circular(50),
+                  boxShadow: [
+                    BoxShadow(
+                      color: kprimaryColor.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
                 alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 50),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: const Text(
                   "Add to Cart",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

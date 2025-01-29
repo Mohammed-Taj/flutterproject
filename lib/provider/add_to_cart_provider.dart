@@ -5,6 +5,11 @@ import 'package:shop/models/product_model.dart';
 class CartProvider extends ChangeNotifier {
   final List<Product> _cart = [];
   List<Product> get cart => _cart;
+  void removeitem(Product product) {
+    _cart.remove(product);
+    notifyListeners();
+  }
+
   void toogleFavorite(Product product) {
     // toogleFavorite is just a name you can give what ever you wants to
 

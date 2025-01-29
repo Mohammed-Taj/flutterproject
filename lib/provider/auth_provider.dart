@@ -4,10 +4,11 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String? _username; // Store the username locally
-
+  String? _password;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get username => _username;
+  String? get password => _password;
 
   Future<void> register(String username, String email, String password) async {
     _isLoading = true;
@@ -30,7 +31,10 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(
+    String email,
+    String password,
+  ) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -41,7 +45,8 @@ class AuthProvider with ChangeNotifier {
       await Future.delayed(Duration(seconds: 2)); // Mock API call
 
       // If successful, retrieve and store the username from the API response
-      _username = "User"; // Replace with the actual username from API response
+      _username =
+          username; // Replace with the actual username from API response
       _isLoading = false;
       notifyListeners();
     } catch (error) {

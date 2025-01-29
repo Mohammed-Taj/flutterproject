@@ -11,35 +11,45 @@ class ImageSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    // Responsive height for the slider
+    final screenHeight = MediaQuery.of(context).size.height;
+    final sliderHeight = screenHeight > 600 ? 250.0 : 200.0;
+
+    return Stack(
       children: [
-        SizedBox(
-          height: 220,
-          width: double.infinity,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: PageView(
-              scrollDirection: Axis.horizontal,
-              allowImplicitScrolling: true,
-              onPageChanged: onChange,
-              physics: const ClampingScrollPhysics(),
-              children: [
-                Image.asset(
-                  "images/slider.jpg",
-                  fit: BoxFit.cover,
+        Column(
+          children: [
+            SizedBox(
+              height: sliderHeight,
+              width: double.infinity,
+              child: ClipRRect(
+                borderRadius:
+                    BorderRadius.circular(20), // More modern rounded corners
+                child: PageView(
+                  scrollDirection: Axis.horizontal,
+                  allowImplicitScrolling: true,
+                  onPageChanged: onChange,
+                  physics: const ClampingScrollPhysics(),
+                  children: [
+                    Image.asset(
+                      "images/slider.jpg",
+                      fit: BoxFit.cover,
+                    ),
+                    Image.asset(
+                      "images/image1.png",
+                      fit: BoxFit.cover,
+                    ),
+                    Image.asset(
+                      "images/slider3.png",
+                      fit: BoxFit.cover,
+                    ),
+                  ],
                 ),
-                Image.asset(
-                  "images/image1.png",
-                  fit: BoxFit.cover,
-                ),
-                Image.asset(
-                  "images/slider3.png",
-                  fit: BoxFit.cover,
-                )
-              ],
+              ),
             ),
-          ),
+          ],
         ),
+        // Page indicator with animation
         Positioned.fill(
           bottom: 10,
           child: Align(
@@ -47,20 +57,25 @@ class ImageSlider extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                5,
+                3, // Based on the number of images
                 (index) => AnimatedContainer(
-                  duration: const Duration(microseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   width: currentSlide == index ? 15 : 8,
                   height: 8,
-                  margin: const EdgeInsets.only(right: 3),
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: currentSlide == index
-                          ? Colors.black
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: Colors.black,
-                      )),
+                    color:
+                        currentSlide == index ? Colors.white : Colors.grey[400],
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      if (currentSlide == index)
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),

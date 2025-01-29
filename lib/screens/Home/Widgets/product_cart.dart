@@ -11,6 +11,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = FavoriteProvider.of(context);
+    double screenWidth = MediaQuery.of(context).size.width; // Responsive width
 
     return GestureDetector(
       onTap: () {
@@ -22,15 +23,22 @@ class ProductCard extends StatelessWidget {
         );
       },
       child: Stack(
+        clipBehavior: Clip.none, // Prevents the Stack from clipping children
         children: [
           Container(
-            width: double.infinity,
+            width: screenWidth * 0.45, // Adjust width for responsiveness
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: kcontentColor,
+              color: Colors.white30, // Card color
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 5),
@@ -39,8 +47,8 @@ class ProductCard extends StatelessWidget {
                     tag: product.image,
                     child: Image.asset(
                       product.image,
-                      width: 150,
-                      height: 150,
+                      width: screenWidth * 0.35, // Responsive size
+                      height: screenWidth * 0.35, // Responsive size
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -80,39 +88,43 @@ class ProductCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
           Positioned(
-              child: Align(
-            alignment: Alignment.topRight,
-            child: Container(
-              height: 40,
-              width: 40,
-              decoration: const BoxDecoration(
-                color: kprimaryColor,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(10),
+            right: 5,
+            top: 5,
+            child: Align(
+              alignment: Alignment.topRight,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: kprimaryColor,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(10),
+                  ),
                 ),
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  provider.toggleFavorite(product);
-                },
-                child: Icon(
-                  provider.isExist(product)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: Colors.white,
-                  size: 22,
+                child: GestureDetector(
+                  onTap: () {
+                    provider.toggleFavorite(product);
+                  },
+                  child: Icon(
+                    provider.isExist(product)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ),
-          ))
+          ),
         ],
       ),
     );

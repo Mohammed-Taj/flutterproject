@@ -11,9 +11,8 @@ class CheckOutBox extends StatelessWidget {
     return Container(
       height: 300,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
           topRight: Radius.circular(30),
           bottomLeft: Radius.circular(30),
         ),
@@ -32,7 +31,7 @@ class CheckOutBox extends StatelessWidget {
                 horizontal: 15,
               ),
               filled: true,
-              fillColor: kcontentColor,
+              // fillColor: kcontentColor,
               hintText: "Enter Discoutn Code",
               hintStyle: const TextStyle(
                 color: Colors.grey,
@@ -98,7 +97,7 @@ class CheckOutBox extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: kprimaryColor,
+                // backgroundColor: kprimaryColor,
                 minimumSize: const Size(double.infinity, 55),
               ),
               onPressed: () {},
@@ -107,7 +106,7 @@ class CheckOutBox extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Colors.white,
+                  // color: Colors.white,
                 ),
               ))
         ],

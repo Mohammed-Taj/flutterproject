@@ -5,6 +5,9 @@ import 'package:shop/screens/Favorite/favorite_screen.dart';
 import 'package:shop/screens/Home/home_screen.dart';
 import 'package:shop/screens/Profile/profile.dart';
 
+// Move the enum to the top level
+enum NavItem { grid, favorite, home, cart, profile }
+
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
 
@@ -13,33 +16,42 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int currentIndex = 2; // Default index for HomeScreen
+  NavItem currentNavItem = NavItem.home; // Default to HomeScreen
 
-  final Map<int, Widget> screens = {
-    0: Scaffold(),
-    1: Favorite(),
-    2: HomeScreen(),
-    3: CartScreen(),
-    4: UserProfileScreen(),
+  // Use a map to associate each NavItem with its corresponding screen
+  final Map<NavItem, Widget> screens = {
+    NavItem.grid: const Scaffold(), // Placeholder for grid view
+    NavItem.favorite: const Favorite(),
+    NavItem.home: const HomeScreen(),
+    NavItem.cart: const CartScreen(),
+    NavItem.profile: const UserProfileScreen(),
   };
 
-  void _onNavItemSelected(int index) {
+  void _onNavItemSelected(NavItem navItem) {
     setState(() {
-      currentIndex = index;
+      currentNavItem = navItem;
     });
   }
 
   void _onFabPressed() {
-    setState(() {
-      currentIndex = 2; // Reset to HomeScreen on FAB press
-    });
+    // Only reset to home if not already on home
+    if (currentNavItem != NavItem.home) {
+      setState(() {
+        currentNavItem = NavItem.home;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: screens[currentNavItem],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onFabPressed,
+        tooltip: 'Home', // Add a tooltip for better UX
         shape: const CircleBorder(),
         backgroundColor: kprimaryColor,
         child: const Icon(
@@ -60,25 +72,24 @@ class _BottomNavBarState extends State<BottomNavBar> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildNavItem(0, Icons.grid_view_outlined),
-            _buildNavItem(1, Icons.favorite_border),
+            _buildNavItem(NavItem.grid, Icons.grid_view_outlined),
+            _buildNavItem(NavItem.favorite, Icons.favorite_border),
             const SizedBox(width: 15), // Spacer for FAB
-            _buildNavItem(3, Icons.shopping_cart_outlined),
-            _buildNavItem(4, Icons.person),
+            _buildNavItem(NavItem.cart, Icons.shopping_cart_outlined),
+            _buildNavItem(NavItem.profile, Icons.person),
           ],
         ),
       ),
-      body: screens[currentIndex]!,
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon) {
+  Widget _buildNavItem(NavItem navItem, IconData icon) {
     return IconButton(
-      onPressed: () => _onNavItemSelected(index),
+      onPressed: () => _onNavItemSelected(navItem),
       icon: Icon(
         icon,
         size: 30,
-        color: currentIndex == index ? kprimaryColor : Colors.grey.shade400,
+        color: currentNavItem == navItem ? kprimaryColor : Colors.grey.shade400,
       ),
     );
   }
