@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/admen.dart';
+import 'package:shop/admen/DisplayProductsScreen.dart';
+import 'package:shop/admen/UpdateProductScreen.dart';
 import 'package:shop/onboarding.dart';
 import 'package:shop/provider/HomeProvider.dart';
 import 'package:shop/provider/OnboardingProvider.dart';
@@ -9,6 +12,7 @@ import 'package:shop/provider/favorite_provider.dart';
 import 'package:shop/provider/theme_provider.dart';
 import 'package:shop/screens/Login_screen.dart';
 import 'package:shop/screens/Register_screen.dart';
+import 'package:shop/screens/Verification.dart';
 import 'package:shop/screens/nav_bar_screen.dart';
 import 'package:shop/shared/shared_prefs_helper.dart';
 import 'package:shop/utils/theme/theme.dart';
@@ -49,12 +53,16 @@ class MyApp extends StatelessWidget {
       themeMode: themeNotifier.themeMode, // Theme based on ThemeNotifier
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      initialRoute: isLoggedIn ? '/nav-bar' : '/onboarding',
+      // initialRoute: isLoggedIn ? '/nav-bar' : '/onboarding',
+      initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
         '/nav-bar': (context) => BottomNavBar(),
         '/register': (context) => RegisterScreen(),
-        '/onboarding': (context) => OnboardingScreen()
+        '/onboarding': (context) => OnboardingScreen(),
+        // '/Verification': (context) => Verification(),
+        '/AddProductScreen': (context) => AddProductScreen(),
+        '/DisplayProductsScreen': (context) => DisplayProductsScreen(),
       },
     );
   }
