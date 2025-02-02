@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:shop/screens/Login_screen.dart';
+import 'package:shop/screens/login/Login_screen.dart';
 
 class Verification extends StatefulWidget {
   final String email; // Email passed from the registration screen

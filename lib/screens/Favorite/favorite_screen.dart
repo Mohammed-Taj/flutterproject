@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop/constants.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/provider/favorite_provider.dart';
 
 class Favorite extends StatelessWidget {
@@ -7,11 +7,12 @@ class Favorite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = FavoriteProvider.of(context);
-    final finalList = provider.favorites;
+    final provider = Provider.of<FavoriteProvider>(context, listen: false);
 
-    // Get screen size for responsiveness
-    double screenWidth = MediaQuery.of(context).size.width;
+    // Load favorites when the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      provider.loadFavorites();
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -25,23 +26,25 @@ class Favorite extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-          ),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.pushNamed(context, '/nav-bar');
           },
         ),
       ),
-      body: finalList.isEmpty
-          ? Center(
+      body: Consumer<FavoriteProvider>(
+        builder: (context, provider, child) {
+          final favorites = provider.favorites;
+
+          if (favorites.isEmpty) {
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.favorite_border,
                     color: Colors.grey.shade400,
-                    size: screenWidth * 0.2, // Responsive size
+                    size: MediaQuery.of(context).size.width * 0.2,
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -53,80 +56,27 @@ class Favorite extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ListView.builder(
-                itemCount: finalList.length,
-                itemBuilder: (context, index) {
-                  final favoriteItem = finalList[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Card(
-                      elevation: 4,
-                      shadowColor: Colors.grey.withOpacity(0.2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(16),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            color: Colors.grey.shade200,
-                            child: Image.asset(
-                              favoriteItem.image,
-                              fit: BoxFit.cover,
-                              width: screenWidth * 0.15, // Responsive width
-                              height: screenWidth * 0.15, // Responsive height
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          favoriteItem.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                            Text(
-                              favoriteItem.category,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "\$${favoriteItem.price}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            final favoriteItem = provider.favorites[index];
-                            provider.removeFavorite(favoriteItem);
-                          },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final product = favorites[index];
+              return ListTile(
+                title: Text(product.title),
+                subtitle: Text("\$${product.price}"),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    provider.removeFavorite(product);
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

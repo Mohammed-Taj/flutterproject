@@ -126,24 +126,34 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Update Product'),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: Icon(Icons.save, color: Colors.white),
             onPressed: _isLoading ? null : _updateProduct,
           ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).primaryColor,
+                ),
+              ),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
+                    // Product Name Field
+                    _buildFormField(
                       controller: _nameController,
-                      decoration: InputDecoration(labelText: 'Product Name'),
+                      labelText: 'Product Name',
+                      icon: Icons.title,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a product name';
@@ -151,9 +161,13 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                         return null;
                       },
                     ),
-                    TextFormField(
+                    SizedBox(height: 16),
+
+                    // Description Field
+                    _buildFormField(
                       controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'Description'),
+                      labelText: 'Description',
+                      icon: Icons.description,
                       maxLines: 3,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -162,9 +176,13 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                         return null;
                       },
                     ),
-                    TextFormField(
+                    SizedBox(height: 16),
+
+                    // Price Field
+                    _buildFormField(
                       controller: _priceController,
-                      decoration: InputDecoration(labelText: 'Price'),
+                      labelText: 'Price',
+                      icon: Icons.attach_money,
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -176,9 +194,13 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                         return null;
                       },
                     ),
-                    TextFormField(
+                    SizedBox(height: 16),
+
+                    // Category ID Field
+                    _buildFormField(
                       controller: _categoryIdController,
-                      decoration: InputDecoration(labelText: 'Category ID'),
+                      labelText: 'Category ID',
+                      icon: Icons.category,
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -191,22 +213,104 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                       },
                     ),
                     SizedBox(height: 20),
-                    _imageFile == null
-                        ? Text('No image selected.')
-                        : Image.file(_imageFile!, height: 150),
-                    ElevatedButton(
-                      onPressed: _pickImage,
-                      child: Text('Select Image'),
+
+                    // Image Picker Section
+                    Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            _imageFile == null
+                                ? Container(
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.image,
+                                        size: 50,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  )
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      _imageFile!,
+                                      height: 150,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                            SizedBox(height: 10),
+                            ElevatedButton.icon(
+                              onPressed: _isLoading ? null : _pickImage,
+                              icon: Icon(Icons.camera_alt),
+                              label: Text('Select Image'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 20),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     SizedBox(height: 20),
+
+                    // Update Product Button
                     ElevatedButton(
                       onPressed: _isLoading ? null : _updateProduct,
-                      child: Text('Update Product'),
+                      child: Text(
+                        'Update Product',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildFormField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+    int? maxLines,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      validator: validator,
+      enabled: !_isLoading,
     );
   }
 }

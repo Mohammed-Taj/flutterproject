@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class Product {
@@ -12,17 +14,55 @@ class Product {
   final double rate;
   int quantity;
 
-  Product(
-      {required this.title,
-      required this.review,
-      required this.description,
-      required this.image,
-      required this.price,
-      required this.colors,
-      required this.seller,
-      required this.category,
-      required this.rate,
-      required this.quantity});
+  Product({
+    required this.title,
+    required this.description,
+    required this.image,
+    required this.review,
+    required this.seller,
+    required this.price,
+    required this.colors,
+    required this.category,
+    required this.rate,
+    required this.quantity,
+  });
+
+  // Convert a Product into a Map
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'image': image,
+      'review': review,
+      'seller': seller,
+      'price': price,
+      'colors': jsonEncode(
+          colors.map((color) => color.value).toList()), // Serialize to JSON
+
+      'category': category,
+      'rate': rate,
+      'quantity': quantity, // Explicitly cast to int
+    };
+  }
+
+  // Extract a Product from a Map
+  factory Product.fromMap(Map<String, dynamic> map) {
+    return Product(
+      title: map['title'],
+      description: map['description'],
+      image: map['image'],
+      review: map['review'],
+      seller: map['seller'],
+      price: map['price'],
+      colors: (jsonDecode(map['colors']) as List)
+          .map((value) => Color(value))
+          .toList(), // Deserialize from JSON
+
+      category: map['category'],
+      rate: map['rate'],
+      quantity: map['quantity'] as int, // Ensure quantity is an int
+    );
+  }
 }
 
 final List<Product> all = [

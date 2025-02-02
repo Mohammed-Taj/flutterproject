@@ -18,7 +18,7 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   NavItem currentNavItem = NavItem.home; // Default to HomeScreen
 
-  // Use a map to associate each NavItem with its corresponding screen
+  //  a map to associate each NavItem with its corresponding screen
   final Map<NavItem, Widget> screens = {
     NavItem.grid: const Scaffold(), // Placeholder for grid view
     NavItem.favorite: const Favorite(),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop/admen.dart';
+import 'package:shop/admen/AddProductScreen.dart';
 import 'dart:convert';
 
-import 'package:shop/admen/UpdateProductScreen.dart'; // Ensure this import is correct
+import 'package:shop/admen/UpdateProductScreen.dart';
+import 'package:shop/shared/shared_prefs_helper.dart'; // Ensure this import is correct
 
 class DisplayProductsScreen extends StatefulWidget {
   @override
@@ -190,6 +191,13 @@ class _DisplayProductsScreenState extends State<DisplayProductsScreen> {
               }
             },
           ),
+          IconButton(
+              onPressed: () async {
+                await SharedPrefsHelper.setLoggedIn(false);
+                await SharedPrefsHelper.setIsAdmin(false);
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              icon: Icon(Icons.logout))
         ],
       ),
       body: _isLoading

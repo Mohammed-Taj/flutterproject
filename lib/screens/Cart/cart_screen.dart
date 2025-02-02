@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/provider/add_to_cart_provider.dart';
 import 'package:shop/screens/Cart/check_out.dart';
-import 'package:shop/screens/nav_bar_screen.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});

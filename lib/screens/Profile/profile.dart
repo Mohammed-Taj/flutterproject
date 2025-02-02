@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/provider/auth_provider.dart';
+import 'package:shop/shared/shared_prefs_helper.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -15,8 +16,10 @@ class UserProfileScreen extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         actions: [
           IconButton(
-            onPressed: () {
+            onPressed: () async {
               authProvider.logout();
+              await SharedPrefsHelper
+                  .clearPreferences(); // Clear SharedPreferences on logout
               Navigator.pushReplacementNamed(context, '/login');
             },
             icon: const Icon(Icons.logout, color: Colors.white),
@@ -27,42 +30,107 @@ class UserProfileScreen extends StatelessWidget {
       ),
       body: authProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildProfileCard(
-                      context,
-                      title: 'Username',
-                      content: authProvider.username ?? "N/A",
-                      icon: Icons.person,
-                      buttonLabel: 'Update Username',
-                      onPressed: () =>
-                          _showUsernameUpdateDialog(context, authProvider),
+          : FutureBuilder(
+              future: SharedPrefsHelper
+                  .getEmail(), // Retrieve email from SharedPreferences
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final String email =
+                    snapshot.data ?? "N/A"; // Provide a default value
+
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildProfileCard(
+                          context,
+                          title: 'Email',
+                          content:
+                              email, // Display email from SharedPreferences
+                          icon: Icons.email,
+                          buttonLabel: 'Update Email',
+                          onPressed: () =>
+                              _showEmailUpdateDialog(context, authProvider),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildProfileCard(
+                          context,
+                          title: 'Username',
+                          content: authProvider.username ??
+                              "N/A", // Provide a default value
+                          icon: Icons.person,
+                          buttonLabel: 'Update Username',
+                          onPressed: () =>
+                              _showUsernameUpdateDialog(context, authProvider),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildProfileCard(
+                          context,
+                          title: 'Password',
+                          content: '********',
+                          icon: Icons.lock,
+                          buttonLabel: 'Update Password',
+                          onPressed: () =>
+                              _showPasswordUpdateDialog(context, authProvider),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    _buildProfileCard(
-                      context,
-                      title: 'Password',
-                      content: '********',
-                      icon: Icons.lock,
-                      buttonLabel: 'Update Password',
-                      onPressed: () =>
-                          _showPasswordUpdateDialog(context, authProvider),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
+    );
+  }
+
+  void _showEmailUpdateDialog(BuildContext context, AuthProvider authProvider) {
+    final emailController = TextEditingController();
+    emailController.text = authProvider.email ?? ''; // Provide a default value
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return _buildUpdateDialog(
+          context: context,
+          title: 'Update Email',
+          content: TextField(
+            controller: emailController,
+            decoration: const InputDecoration(
+              labelText: 'New Email',
+              border: OutlineInputBorder(),
+              hintText: 'Enter your new email',
+            ),
+          ),
+          onUpdate: () async {
+            String newEmail = emailController.text.trim();
+            if (newEmail.isEmpty || !newEmail.contains('@')) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Please enter a valid email'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return;
+            }
+
+            await authProvider.updateEmail(newEmail);
+            _handleUpdateResponse(
+                context, authProvider, 'Email updated successfully!');
+          },
+        );
+      },
     );
   }
 
   void _showUsernameUpdateDialog(
       BuildContext context, AuthProvider authProvider) {
     final usernameController = TextEditingController();
-    usernameController.text = authProvider.username ?? '';
+    usernameController.text =
+        authProvider.username ?? ''; // Provide a default value
 
     showDialog(
       context: context,
@@ -90,7 +158,7 @@ class UserProfileScreen extends StatelessWidget {
               return;
             }
 
-            await authProvider.updateProfile(newUsername, '');
+            await authProvider.updateUsername(newUsername);
             _handleUpdateResponse(
                 context, authProvider, 'Username updated successfully!');
           },
@@ -158,8 +226,10 @@ class UserProfileScreen extends StatelessWidget {
               return;
             }
 
-            await authProvider.updateProfile(
-                authProvider.username!, newPassword);
+            await authProvider.updatePassword(
+              currentPassword: currentPassword,
+              newPassword: newPassword,
+            );
             _handleUpdateResponse(
                 context, authProvider, 'Password updated successfully!');
           },
